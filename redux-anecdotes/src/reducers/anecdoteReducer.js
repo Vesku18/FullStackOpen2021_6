@@ -1,6 +1,9 @@
 
+import { getAllByAltText } from '@testing-library/dom'
 import { useDispatch } from 'react-redux'
 import {shutNote, setNote} from './textReducer.js'
+
+import anecdoteService from '../services/anecdotes'
 
 const anecdotesAtStart = [
   'If it hurts, do it more often',
@@ -33,6 +36,9 @@ const reducer = (state = [], action) => {
       const id = action.data
       const anecdoteToVote = state.find(n => n.id === id)
       return state.map(o => o.id !== id ? o : {content: o.content, id: o.id, votes: o.votes+1})
+    case 'INITIALIZE':
+      return action.data
+
     default: 
       return state
     }
@@ -52,5 +58,14 @@ export const voteAnecdote = (id) => {
   }
 }
 
+export const initializeAnecdotes = () => {
+  return async dispatch => {
+    const n = await anecdoteService.getAll()
+    dispatch({
+      type: "INITIALIZE",
+      data: n
+    })
+  }
+}
 
 export default reducer
